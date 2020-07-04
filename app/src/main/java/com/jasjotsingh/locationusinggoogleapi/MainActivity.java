@@ -18,7 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FetchAddressTask.OnTaskCompleted {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     Button button_location;
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -53,17 +53,23 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
-                        mLastLocation = location;
-                        textView_location.setText(
-                                getString(R.string.location_text,
-                                        mLastLocation.getLatitude(),
-                                        mLastLocation.getLongitude(),
-                                        mLastLocation.getTime()));
+//                        mLastLocation = location;
+//                        textView_location.setText(
+//                                getString(R.string.location_text,
+//                                        mLastLocation.getLatitude(),
+//                                        mLastLocation.getLongitude(),
+//                                        mLastLocation.getTime()));
+                        new FetchAddressTask(MainActivity.this,
+                                MainActivity.this).execute(location);
+                        textView_location.setText(getString(R.string.address_text,
+                                getString(R.string.loading),
+                                System.currentTimeMillis()));
                     } else {
                         textView_location.setText(R.string.no_location);
                     }
                 }
             });
+
         }
     }
     @Override
@@ -83,5 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onTaskCompleted(String result) {
+        // Update the UI
+        textView_location.setText(getString(R.string.address_text,
+                result, System.currentTimeMillis()));
     }
 }
