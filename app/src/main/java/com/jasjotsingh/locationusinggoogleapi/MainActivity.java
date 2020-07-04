@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity implements FetchAddressTask.OnTaskCompleted {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final String TRACKING_LOCATION_KEY = "tracking_location";
     Button button_location;
     public static final String TAG = MainActivity.class.getSimpleName();
     Location mLastLocation;
@@ -39,6 +40,11 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState != null) {
+            mTrackingLocation = savedInstanceState.getBoolean(
+                    TRACKING_LOCATION_KEY);
+        }
 
         mAndroidImageView = (ImageView) findViewById(R.id.imageview_android);
 
@@ -191,5 +197,10 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
             mTrackingLocation = true;
         }
         super.onPause();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(TRACKING_LOCATION_KEY, mTrackingLocation);
+        super.onSaveInstanceState(outState);
     }
 }
